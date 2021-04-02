@@ -64,6 +64,18 @@
 			"command": "host start",
 			"isBackground": true,
 			"problemMatcher": "$func-dotnet-watch"
+		},
+		{
+			"label": "open-store",
+			"type": "shell",
+			"command": "azurite --silent --location c:\\azurite --debug c:\\azurite\\debug.log",
+			"group": "nix",
+			"presentation": {
+			  "reveal": "always",
+			  "panel": "new"
+			},
+			"problemMatcher": "$func-node-watch"
 		}
+
 	]
 }
