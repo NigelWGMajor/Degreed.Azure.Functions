@@ -68,14 +68,12 @@
 		{
 			"label": "open-store",
 			"type": "shell",
-			"command": "azurite --silent --location c:\\azurite --debug c:\\azurite\\debug.log",
-			"group": "nix",
+			"command": "azurite --silent --location ${workspaceFolder}/azurite --debug ${workspaceFolder}/debug.log", 
 			"presentation": {
-			  "reveal": "always",
-			  "panel": "new"
+				"reveal": "always",
+				"panel": "new"
 			},
 			"problemMatcher": "$func-node-watch"
 		}
-
 	]
 }
