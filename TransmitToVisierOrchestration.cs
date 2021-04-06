@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text.Encodings;
+using System.Text;
 
 namespace Degreed.Azure.Functions.Visier
 {
@@ -22,7 +24,7 @@ namespace Degreed.Azure.Functions.Visier
         {
             _storageAccount = CloudStorageAccount.Parse(_ConnectionString_);
             ActivityHelper.SetConnection(_ConnectionString_);
-            ActivityHelper.SetAccount(_storageAccount);
+          //  Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
         private static CloudStorageAccount _storageAccount;
 

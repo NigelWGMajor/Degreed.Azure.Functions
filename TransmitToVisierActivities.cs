@@ -17,8 +17,8 @@ namespace Degreed.Azure.Functions.Visier
             var containerInfo = context.GetInput<string>();
             var status = $"Zipping {containerInfo}";
             log.LogInformation(status + ".");
-            
-            var packageInfo = await ActivityHelper.ZipFromBatch("batch01", "batch01.zip");
+           
+            var packageInfo = await ActivityHelper.ZipFromBatch("batch01", "batch01.zip", log);
 
             return new TransmitPartial(packageInfo, status + " completed.");
         }
@@ -29,9 +29,6 @@ namespace Degreed.Azure.Functions.Visier
             var status = $"Encrypting {packageInfo}.";
             log.LogInformation(status + ".");
             //:
-
-
-
 
             string encryptedInfo = "encryptedBlob";
             return new TransmitPartial(encryptedInfo, status);
@@ -44,9 +41,6 @@ namespace Degreed.Azure.Functions.Visier
             log.LogInformation(status + ".");
             //:
 
-
-
-
             string transmittedInfo = "completed";
             return new TransmitPartial(transmittedInfo, status);
         }
@@ -57,9 +51,6 @@ namespace Degreed.Azure.Functions.Visier
             var status = $"Handshaking {transmittedInfo}.";
             log.LogInformation(status + ".");
             //:
-
-
-
             string handshakeInfo = "acknowledged";
             return new TransmitPartial(handshakeInfo, status);
         }
