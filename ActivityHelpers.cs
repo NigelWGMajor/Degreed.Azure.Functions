@@ -48,43 +48,58 @@ namespace Degreed.Azure.Functions.Visier
                 {
                     blobs.Add(blob);
                 }
-            } while (blobContinuationToken != null)
+            } while (blobContinuationToken != null);
 
             // Add the target zip file...
-            var output = container.GetBlockBlobReference(outputName);
-            using (Stream output = new FileStream(outputPath, FileMode.Create))
+            var outputBlob = container.GetBlockBlobReference(outputName);
+            
+            
+            using (Stream output = await outputBlob.OpenWriteAsync())
 	    	{
-		    	using (zip.ZipOutputStream outputStream = new zip.ZipOutputStream(output, _BufferSize_))
+		    	using (ZipOutputStream outputStream = new ZipOutputStream(output))
 			    {
 				    outputStream.SetLevel(9); // highest level
 			    	byte[] buffer = new byte[_BufferSize_];
 			    	int bufferCount = 0;
 
-			     	foreach (var sourceFile in sourceFiles)
+			     	foreach (var sourceBlob in blobs)
 				    {
+                        try
+                        {
+                        var source = container.GetBlobReference(sourceBlob.Uri.ToString()); 
 					    // upload the string for the virtual file name 
-				    	sourceFile.SetOrgAndTimeStamp(_orgId, _timeStamp);
 				    	// make a stream, as that's what we would normally be working with...
-				    	using (FileStream inputStream = new FileStream(sourceFile.SourcePath, FileMode.Open))
-				    	{
-				    		// Make an entry for this stream
-				    		zip.ZipEntry entry = new zip.ZipEntry(sourceFile.FullPath);
+				    	Stream inputStream = await source.OpenReadAsync();
+				    	
+				    	// Make an entry for this stream
+				    	ZipEntry entry = new ZipEntry(GetFilePath(source));
 				    		// timestamp
-				    		entry.DateTime = _packageDateTime;
+				    		//: entry.DateTime = _packageDateTime;
 				    		// add to archive
-				    		outputStream.PutNextEntry(entry);
+				    	outputStream.PutNextEntry(entry);
 				    		// read through the buffer
-				    		do
-				    		{
-					    		bufferCount = inputStream.Read(buffer, 0, buffer.Length);
-						    	outputStream.Write(buffer, 0, bufferCount);
-				    		} while (bufferCount > 0);
-					    } // memory stream closed
+				    	do
+				    	{
+					    	bufferCount = inputStream.Read(buffer, 0, buffer.Length);
+						   	outputStream.Write(buffer, 0, bufferCount);
+				    	} while (bufferCount > 0);
+                        }
+                        catch (Exception ex)
+                        {
+                            
+                        }
 				    }
 				    outputStream.Finish();
                 }
 			}
             return "hljuhlkihj.zip";
+            
+            // local methods:
+            string GetFilePath(CloudBlob blob)
+            {
+                // make this read the prefix, etc.
+                return blob.Name;
+            }
         }
         public static string EncryptedFromZip(string zipPath)
         {

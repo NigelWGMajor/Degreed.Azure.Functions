@@ -12,13 +12,13 @@ namespace Degreed.Azure.Functions.Visier
     public static class transmitToVisierActivities
     {
         [FunctionName("TransmitToVisier_Zip")]
-        public static TransmitPartial Package([ActivityTrigger] IDurableActivityContext context, ILogger log)
+        public static async Task<TransmitPartial> PackageAsync([ActivityTrigger] IDurableActivityContext context, ILogger log)
         {
             var containerInfo = context.GetInput<string>();
-            var status = $"Packaging {containerInfo}";
+            var status = $"Zipping {containerInfo}";
             log.LogInformation(status + ".");
             
-            var packageInfo = "Package Info";
+            var packageInfo = await ActivityHelper.ZipFromBatch("batch01", "batch01.zip");
 
             return new TransmitPartial(packageInfo, status + " completed.");
         }
